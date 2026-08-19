@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Carnicería La Última Lucha</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (Substitutes for easy vector icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-main: #121214;
+            --bg-card: #1a1a1e;
+            --bg-input: #26262b;
+            --primary: #e63946;
+            --primary-hover: #ff4d5a;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #2e2e35;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        aside {
+            width: 260px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            background-color: var(--primary);
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text h2 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active a, .nav-item a:hover {
+            color: var(--text-main);
+            background-color: var(--bg-input);
+        }
+
+        .nav-item.active a {
+            border-left: 4px solid var(--primary);
+            border-radius: 4px 8px 8px 4px;
+        }
+
+        /* Main Content Layout */
+        main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .welcome-back h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .welcome-back p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Grid Framework */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* POS Weight Calculator Component */
+        .pos-calculator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, #2a1b1d 0%, #1e1415 100%);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            grid-column: span 2;
+            margin-top: 8px;
+        }
+
+        .price-label {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .price-amount {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 4px 0;
+        }
+
+        .btn-action {
+            grid-column: span 2;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-action:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Inventory Table Component */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 12px 16px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge.success { background-color: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge.warning { background-color: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .badge.danger { background-color: rgba(230, 57, 70, 0.1); color: var(--primary); }
+
+        /* Summary Widgets */
+        .summary-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background-color: var(--bg-input);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .summary-icon {
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .summary-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .summary-info h3 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Layout -->
+    <aside>
+        <div class="logo-area">
+            <div class="logo-icon"><i data-lucide="beef"></i></div>
+            <div class="logo-text">
+                <h2>La Última Lucha</h2>
+                <p>Panel Administrativo</p>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active"><a href="#"><i data-lucide="layout-dashboard"></i> Panel Principal</a></li>
+            <li class="nav-item"><a href="#"><i data-lucide="scale"></i> Mostrador / Báscula</a></li>
+            <li class="nav-item"><a href="#"><i data-lucide="boxes"></i> Inventario de Canales</a></li>
+            <li class="nav-item"><a href="#"><i data-lucide="history"></i> Historial de Ventas</a></li>
+            <li class="nav-item"><a href="#"><i data-lucide="trending-up"></i> Reporte Altruista</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main>
+        <header>
+            <div class="welcome-back">
+                <h1>¡Fuerza, Don Lucha! 🥊</h1>
+                <p>Sierra Mojada 1157, Independencia Oriente, Guadalajara.</p>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Left Column: Operations & Tables -->
+            <div class="left-column">
+                
+                <!-- Active Point of Sale -->
+                <div class="card">
+                    <div class="card-title"><i data-lucide="shopping-cart" style="color: var(--primary)"></i> Calculadora Rápida de Mostrador</div>
+                    <form oninput="calculatePrice()" class="pos-calculator" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="product">Corte / Producto</label>
+                            <select id="product">
+                                <option value="160" data-unit="kg">Bistec de Res ($160/kg)</option>
+                                <option value="140" data-unit="kg">Molida Especial ($140/kg)</option>
+                                <option value="110" data-unit="kg">Chuleta de Cerdo ($110/kg)</option>
+                                <option value="95" data-unit="kg">Pechuga de Pollo ($95/kg)</option>
+                                <option value="45" data-unit="pz">Longaniza Casera ($45/pz)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label id="weight-label" for="quantity">Cantidad (en Kilogramos)</label>
+                            <input type="number" id="quantity" step="0.01" value="1.00" min="0.01">
+                        </div>
+                        <div class="price-display">
+                            <span class="price-label">Total a Cobrar Exacto</span>
+                            <span class="price-amount" id="total-price">$160.00</span>
+                        </div>
+                        <button class="btn-action" onclick="registerSale()"><i data-lucide="plus-circle"></i> Registrar Venta e Inyectar Stock</button>
+                    </form>
+                </div>
+
+                <!-- Stock Monitoring Table -->
+                <div class="card">
+                    <div class="card-title"><i data-lucide="layers" style="color: var(--success)"></i> Monitor de Inventario y Alertas de Merma</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Corte</th>
+                                    <th>Categoría</th>
+                                    <th>Stock Actual</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Bistec de Res</strong></td>
+                                    <td>Res</td>
+                                    <td>24.50 kg</td>
+                                    <td><span class="badge success">Óptimo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Chuleta de Cerdo</strong></td>
+                                    <td>Cerdo</td>
+                                    <td>5.20 kg</td>
+                                    <td><span class="badge warning">Stock Bajo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Pechuga de Pollo</strong></td>
+                                    <td>Aves</td>
+                                    <td>1.10 kg</td>
+                                    <td><span class="badge danger">Crítico</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Longaniza Casera</strong></td>
+                                    <td>Embutidos</td>
+                                    <td>15 pz</td>
+                                    <td><span class="badge success">Óptimo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Sidebar Widgets -->
+            <div class="right-column">
+                
+                <div class="card" style="border-color: rgba(16, 185, 129, 0.3);">
+                    <div class="card-title" style="margin-bottom: 12px;"><i data-lucide="heart" style="color: var(--success)"></i> Nota del Desarrollador</div>
+                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+                        Este sistema está optimizado para un uso local rápido. Su paleta oscura reduce la fatiga visual de Don Lucha bajo los focos del mostrador, y los botones gigantes están pensados para pantallas táctiles o teclados rápidos con harina o grasa.
+                    </p>
+                </div>
+
+                <div class="form-group" style="gap: 12px;">
+                    <div class="summary-box">
+                        <div class="summary-icon" style="background-color: #3b82f6;"><i data-lucide="dollar-sign"></i></div>
+                        <div class="summary-info">
+                            <p>Ventas del Día</p>
+                            <h3>$2,450.00</h3>
+                        </div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="summary-icon" style="background-color: var(--warning);"><i data-lucide="alert-triangle"></i></div>
+                        <div class="summary-info">
+                            <p>Cortes por Agotarse</p>
+                            <h3>2 Productos</h3>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Embedded UX Interactions -->
+    <script>
+        // Initialize icons
+        lucide.createIcons();
+
+        // Dynamically change label notation based on selection
+        document.getElementById('product').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const unit = selectedOption.getAttribute('data-unit');
+            const label = document.getElementById('weight-label');
+            if(unit === 'pz') {
+                label.innerText = "Cantidad (en Piezas)";
+            } else {
+                label.innerText = "Cantidad (en Kilogramos)";
+            }
+            calculatePrice();
+        });
+
+        function calculatePrice() {
+            const pricePerUnit = parseFloat(document.getElementById('product').value);
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const total = pricePerUnit * quantity;
+            document.getElementById('total-price').innerText = '$' + total.toFixed(2);
+        }
+
+        function registerSale() {
+            alert("¡Venta guardada localmente! El inventario se ha actualizado de forma simulada.");
+        }
+    </script>
+</body>
+</html>
